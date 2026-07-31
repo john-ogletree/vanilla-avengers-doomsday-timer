@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avengers: Doomsday Countdown</title>
+    <style>
+        :root {
+            --bg-color: #080a0c;
+            --accent-green: #00ff66;
+            --accent-glow: rgba(0, 255, 102, 0.4);
+            --metal-gold: #c5a059;
+            --text-color: #e0e6ed;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 102, 0.05) 0%, transparent 70%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 950px;
+            width: 90%;
+        }
+
+        .sub-title {
+            color: var(--metal-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            margin-bottom: 2.5rem;
+        }
+
+        .clock-container {
+            background: rgba(15, 20, 25, 0.8);
+            border: 1px solid rgba(0, 255, 102, 0.2);
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8),
+                        inset 0 0 15px rgba(0, 255, 102, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .clock-container::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, transparent, var(--accent-green), transparent);
+            border-radius: 14px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+            flex: 1;
+            max-width: 140px;
+        }
+
+        .number {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: bold;
+            color: var(--accent-green);
+            text-shadow: 0 0 15px var(--accent-glow);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 102, 0.3);
+            width: 100%;
+        }
+
+        .label {
+            margin-top: 0.8rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            color: #8a99ad;
+        }
+
+        .status {
+            margin-top: 2.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            letter-spacing: 0.1rem;
+            opacity: 0.8;
+        }
+
+        .status::before {
+            content: "● ";
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .timer {
+                gap: 0.6rem;
+            }
+            .time-box {
+                min-width: 65px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sub-title">System Alert // Protocol Doom</div>
+        <h1>Avengers: Doomsday</h1>
+
+        <div class="clock-container">
+            <div class="timer">
+                <div class="time-box">
+                    <span class="number" id="months">00</span>
+                    <span class="label">Months</span>
+                </div>
+                <div class="time-box">
+                    <span class="number" id="days">00</span>
+                    <span class="label">Days</span>
+                </div>
+                <div class="time-box">
+                    <span class="number" id="hours">00</span>
+                    <span class="label">Hours</span>
+                </div>
+                <div class="time-box">
+                    <span class="number" id="minutes">00</span>
+                    <span class="label">Minutes</span>
+                </div>
+                <div class="time-box">
+                    <span class="number" id="seconds">00</span>
+                    <span class="label">Seconds</span>
+                </div>
+            </div>
+            <div class="status">TIME REMAINING UNTIL ZERO HOUR</div>
+        </div>
+    </div>
+
+    <script>
+        // Target Release Date: December 18, 2026
+        const targetDate = new Date("December 18, 2026 00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference > 0) {
+                // Approximate months based on average month duration
+                const avgMsPerMonth = 1000 * 60 * 60 * 24 * 30.4375;
+                const months = Math.floor(difference / avgMsPerMonth);
+                
+                const msAfterMonths = difference % avgMsPerMonth;
+                const days = Math.floor(msAfterMonths / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((msAfterMonths % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((msAfterMonths % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((msAfterMonths % (1000 * 60)) / 1000);
+
+                document.getElementById("months").innerText = String(months).padStart(2, '0');
+                document.getElementById("days").innerText = String(days).padStart(2, '0');
+                document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+                document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+                document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+            } else {
+                document.querySelector(".clock-container").innerHTML = 
+                    "<h2 style='color: var(--accent-green); font-size: 2rem;'>DOOM HAS ARRIVED</h2>";
+            }
+        }
+
+        // Run immediately and update every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+                                               </html>
+                                               
